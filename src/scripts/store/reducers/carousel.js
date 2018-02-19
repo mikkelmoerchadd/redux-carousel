@@ -8,25 +8,6 @@ import {
   RESUME_PLAYER
 } from '../actions'
 
-const createOrUpdatePlayer = (state) => {
-  if (state.playLoop === undefined) {
-    state.playLoop = (playState) => {
-      if (playState.timerHandle !== undefined) playState.playMethod()
-      state = { ...playState, timerHandle: setTimeout(() => {
-          playState.isPlaying ? state.playLoop(state) : null
-      }, playState.playSpeed)}
-    }
-  }
-  state.playLoop(state)
-  return state
-}
-
-const resetTimer = (timer) => {
-  clearTimeout(timer)
-  timer = undefined
-  return undefined
-}
-
 const changeIndex = (slides, acc) => {
   console.log(slides)
   return slides.map(slide => {
