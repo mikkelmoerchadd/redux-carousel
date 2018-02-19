@@ -1,0 +1,7 @@
+export const ADD_SLIDE = 'ADD_SLIDE'
+export const NEXT_SLIDE = 'NEXT_SLIDE'
+export const PREV_SLIDE = 'PREV_SLIDE'
+export const START_LOOP = 'START_LOOP'
+export const NEXT_LOOP_SLIDE = 'NEXT_LOOP_SLIDE'
+export const PAUSE_PLAYER = 'PAUSE_PLAYER'
+export const RESUME_PLAYER = 'RESUME_PLAYER'
