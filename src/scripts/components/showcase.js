@@ -1,5 +1,4 @@
 import { SectionElementById } from '../utils/moduleUtil'
-import { OnElementViewEnter } from '../utils/browserUtil'
 import FeatureService from '../services/featureService'
 import store from '../store'
 

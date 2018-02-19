@@ -15,7 +15,7 @@ export default class Carousel {
     if (this.config.autoplay) {
       store.dispatch({ type: 'START_LOOP', payload: { isPlaying: true } })
       const loop = () => {
-        setTimeout(() => {
+        setTimeout(() => { 
           store.dispatch({ type: 'NEXT_LOOP_SLIDE' })
           loop()
         }, this.config.playSpeed)
