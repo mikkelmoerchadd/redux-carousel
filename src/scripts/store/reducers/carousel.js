@@ -32,8 +32,6 @@ const carousel = (state = {}, action) => {
       return {...state, slides: addToSlides(state.slides, payload)}
     case NEXT_SLIDE:
       return {...state, slides: changeIndex(state.slides, -1)}
-    case PREV_SLIDE:
-      return {...state, slides: changeIndex(state.slides, 1)}
     case START_LOOP:
       return { ...state, isPlaying: payload.isPlaying }
     case NEXT_LOOP_SLIDE:
