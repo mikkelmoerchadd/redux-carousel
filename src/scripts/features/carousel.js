@@ -37,8 +37,5 @@ export default class Carousel {
   next = () => {
     store.dispatch({ type: 'NEXT_SLIDE' })
   }
-
-  prev = () => {
-  }
 }
 
