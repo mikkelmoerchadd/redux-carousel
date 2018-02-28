@@ -1,45 +1,93 @@
 import {
-  ADD_SLIDE,
+  SET_CONFIG,
+  ADD_SLIDES,
   NEXT_SLIDE,
+  PREV_SLIDE,
   START_LOOP,
   NEXT_LOOP_SLIDE,
   PAUSE_PLAYER,
-  RESUME_PLAYER
+  RESUME_PLAYER,
+  ADD_BULLETS,
+  GO_TO_SLIDE
 } from '../actions'
+import { CreateElement } from '../../utils/browserUtil'
 
-const changeIndex = (slides, acc) => {
-  console.log(slides)
-  return slides.map(slide => {
-    const index = slide.index > 0 ? slide.index + acc : slide.rotate ? acc === 1 ? 0 : slides.length - 1 : slide.index
-    index === 0 ? slide.src.classList.add('active') : slide.src.classList.remove('active')
-    return { ...slide, index: index }
-  })
+const defaultState = {
+  autoPlay: false,
+  playSpeed: 3000,
+  rotate: false,
+  bullets: true
 }
 
-const addToSlides = (slides = [], payload) => {
-  const existingItem = slides.find(slide => slide.src === payload.src)
-  if (!existingItem && payload !== undefined) {
-    return [...slides, {index: slides.length, rotate: payload.rotate, src: payload.src}]
-  }
+const resetTimer = (timer) => {
+  clearTimeout(timer)
+  timer = undefined
+  return undefined
+}
+
+const addToSlides = (payload) => {
+  const slides = []
+  Array.from(payload.children).forEach(slide => slides.push(slide))
   return slides
 }
 
-const carousel = (state = {}, action) => {
+const setActive = (acc, state, fixedIndex) => {
+  const index = fixedIndex !== undefined ? fixedIndex : updateIndex(acc, state)
+  const setActive = (el, i) => {
+    index === i ? el.classList.add('active') : el.classList.remove('active')
+    return el
+  }
+  return {
+    slides: state.slides.map(setActive),
+    bullets: state.bullets.map(setActive),
+    currentIndex: index
+  }
+}
+
+const updateIndex = (acc, state) => {
+  let index
+  if (acc === 1) {
+    index = state.currentIndex < state.slides.length - 1 ? state.currentIndex + acc : state.rotate ? 0 : state.currentIndex
+  } else {
+    index = state.currentIndex > 0 ? state.currentIndex + acc : state.rotate ? state.slides.length - 1 : state.currentIndex
+  }
+  return index
+}
+
+const addToBullets = (state, payload) => {
+  const div = CreateElement('div', ['carousel__bullets'])
+  const bullets = []
+  state.slides.forEach((_, i) => {
+    const bullet = CreateElement('div', ['carousel__bullet', i === 0 ? 'active' : ''])
+    bullet.addEventListener('click', () => payload.method(i))
+    div.appendChild(bullet)
+    bullets.push(bullet)
+  })
+  payload.src.parentNode.insertBefore(div, payload.src.nextSibling)
+  return bullets
+}
+
+const carousel = (state = defaultState, action) => {
   const { type, payload } = action
   switch (type) {
-    case ADD_SLIDE:
-      return {...state, slides: addToSlides(state.slides, payload)}
+    case SET_CONFIG:
+      return { ...state, ...payload }
+    case ADD_SLIDES:
+      return { ...state, slides: addToSlides(payload) }
     case NEXT_SLIDE:
-      return {...state, slides: changeIndex(state.slides, -1)}
-    case START_LOOP:
-      return { ...state, isPlaying: payload.isPlaying }
+      return { ...state, ...setActive(1, state) }
+    case PREV_SLIDE:
+      return { ...state, ...setActive(-1, state) }
     case NEXT_LOOP_SLIDE:
-      console.log("NEXT LOOP", state)
-      return { ...state, slides: state.isPlaying ? changeIndex(state.slides, -1) : state.slides }
+      return state.isPlaying ? { ...state, ...setActive(1, state) } : state
     case PAUSE_PLAYER:
       return  {...state, isPlaying: false }
     case RESUME_PLAYER:
       return { ...state, isPlaying: true }
+    case ADD_BULLETS:
+      return state.bullets ? { ...state, bullets: addToBullets(state, payload) } : state
+    case GO_TO_SLIDE:
+      return { ...state, ...setActive(undefined, state, payload)}
     default:
       return state
   }

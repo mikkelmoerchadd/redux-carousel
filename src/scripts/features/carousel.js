@@ -1,41 +1,44 @@
 import store from '../store'
 
 export default class Carousel {
-  config = {
-    autoplay: false,
-    playSpeed: 3000,
-    rotate: false
-  }
 
   constructor(config, src) {
-    this.config = { ...this.config, ...config }
-    console.log(this.config)
-    this.addSlides(src)
+    store.dispatch({ type: 'SET_CONFIG', payload: config })
+    store.dispatch({ type: 'ADD_SLIDES', payload: src })
+    store.dispatch({ type: 'ADD_BULLETS', payload: {src, method: this.goToSlide} })
 
-    if (this.config.autoplay) {
-      store.dispatch({ type: 'START_LOOP', payload: { isPlaying: true } })
+    // Init autoplay if enabled
+    if (store.getState().carousel.autoPlay) {
+      store.dispatch({ type: 'RESUME_PLAYER' })
       const loop = () => {
-        setTimeout(() => { 
+        setTimeout(() => {
           store.dispatch({ type: 'NEXT_LOOP_SLIDE' })
           loop()
-        }, this.config.playSpeed)
+        }, store.getState().carousel.playSpeed)
       }
       loop()
     }
-  }
 
-  addSlides = (src) => {
-    for (let child in src.children) {
-      store.dispatch({ type: 'ADD_SLIDE', payload: { rotate: this.config.rotate, src: src.children.item(child) }})
-    }
+    src.addEventListener('mouseenter', () => {
+      console.log('enter')
+      store.dispatch({ type: 'PAUSE_PLAYER'})
+    })
 
-    if (this.config.autoplay) {
-      store.dispatch({ type: 'ADD_PLAYER', payload: {playSpeed: this.config.playSpeed, playMethod: this.next}})
-    }
+    src.addEventListener('mouseleave', () => {
+      console.log('leave')
+      store.dispatch({ type: 'RESUME_PLAYER'})
+    })
   }
 
   next = () => {
     store.dispatch({ type: 'NEXT_SLIDE' })
   }
-}
 
+  prev = () => {
+    store.dispatch({ type: 'PREV_SLIDE' })
+  }
+
+  goToSlide = (i) => {
+    store.dispatch({ type: 'GO_TO_SLIDE', payload: i})
+  }
+}

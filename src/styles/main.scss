@@ -18,3 +18,31 @@
     }
   }
 }
+
+.carousel {
+  &__bullets {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 15px;
+  }
+
+  &__bullet {
+    cursor: pointer;
+    margin: 4px;
+    $bulletSize: 12px;
+    display: inline-block;
+    height: $bulletSize;
+    width: $bulletSize;
+    border-radius: 50%;
+    background-color: #352d3b;
+    opacity: .3;
+    transition: opacity .3s ease-in-out;
+    overflow: show;
+
+    &.active {
+      opacity: 1;
+    }
+  }
+}

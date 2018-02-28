@@ -9,22 +9,12 @@ export default class Showcase {
     if (this.src.querySelector('.carousel')) {
       FeatureService.get('carousel').then((module) => {
         this.carousel = new module.default({
-          autoplay: true,
+          autoPlay: true,
           rotate: true,
           playSpeed: 3000
         }, 
         this.src.querySelector('.carousel'))
       })
     }
-
-    document.querySelector('.showcase__featured').addEventListener('mouseenter', () => {
-      console.log('enter')
-      store.dispatch({ type: 'PAUSE_PLAYER'})
-    })
-
-    document.querySelector('.showcase__featured').addEventListener('mouseleave', () => {
-      console.log('leave')
-      store.dispatch({ type: 'RESUME_PLAYER'})
-    })
   }
 }
